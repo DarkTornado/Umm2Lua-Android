@@ -40,13 +40,6 @@ class StdoutConsole(private val ctx: Context) : PopupWindow() {
             adapter!!.notifyDataSetChanged()
             return true
         }
-
-        fun clear(): Boolean {
-            stdout.clear()
-            if (adapter == null) return false
-            adapter!!.notifyDataSetChanged()
-            return true
-        }
     }
 
     init {
@@ -99,12 +92,19 @@ class StdoutConsole(private val ctx: Context) : PopupWindow() {
     }
 
     fun open() {
-        if (isShowing) adapter!!.notifyDataSetChanged()
-        else showAtLocation((ctx as Activity).window.decorView, Gravity.BOTTOM, 0, 0)
+        adapter!!.notifyDataSetChanged()
+        if (!isShowing) showAtLocation((ctx as Activity).window.decorView, Gravity.BOTTOM, 0, 0)
     }
 
     fun close() {
         dismiss()
+    }
+
+    fun clear(): Boolean {
+        stdout.clear()
+        if (adapter == null) return false
+        adapter!!.notifyDataSetChanged()
+        return true
     }
 
     fun toast(msg: String) = Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show()
