@@ -1,7 +1,9 @@
 package com.darktornado.ummexecuter
 
 import android.content.Context
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Rect
 import android.text.Editable
 import android.text.Spannable
 import android.text.TextWatcher
@@ -12,16 +14,16 @@ import java.util.*
 
 class CodeEditor(private val ctx: Context) : EditText(ctx) {
 
-    private var block = false
     private val before = Stack<History>()
     private val after = Stack<History>()
+    private var block = false
+    private val rect: Rect = Rect()
 
     init {
         initTextWatcher(ctx)
     }
 
     private fun initTextWatcher(ctx: Context) {
-        val blueData = arrayOf("동탄", "?", "어떻게", "이 사람이름이냐ㅋㅋ")
         val data = arrayOfNulls<CharSequence>(2)
         addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
@@ -125,6 +127,23 @@ class CodeEditor(private val ctx: Context) : EditText(ctx) {
         return true
     }
 
+    override fun onDraw(canvas: Canvas) {
+        val count = lineCount
+        var num = 1
+        for (n in 0 until count) {
+            val baseline = getLineBounds(n, null)
+            if (n == 0 || text[layout.getLineStart(n) - 1] === '\n') {
+                canvas.drawText(num.toString() + "", (rect.left or rect.centerY()).toFloat(), baseline.toFloat(), paint)
+                num++
+            }
+        }
+        val pad = (num - 1).toString().length * 8
+        val pad2 = dip2px(9)
+        setPadding(dip2px(pad + 2), pad2, pad2, pad2)
+        super.onDraw(canvas)
+    }
+
+    private fun dip2px(dips: Int) = Math.ceil(dips * ctx.resources.displayMetrics.density.toDouble()).toInt()
 
     class History(data: Array<CharSequence?>, var index: Int) {
         var before: CharSequence? = data[0]
