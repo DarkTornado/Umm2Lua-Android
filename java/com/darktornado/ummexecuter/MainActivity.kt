@@ -38,11 +38,15 @@ class MainActivity : Activity() {
         editor = CodeEditor(this)
         editor!!.hint = "엄랭 소스 입력..."
         layout.addView(editor)
+        val pad = dip2px(16)
+        layout.setPadding(pad, pad, pad, pad)
         val scroll = ScrollView(this)
         scroll.addView(layout)
         setContentView(scroll)
     }
 
     fun toast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+
+    fun dip2px(dips: Int) = Math.ceil(dips * resources.displayMetrics.density.toDouble()).toInt()
 
 }
